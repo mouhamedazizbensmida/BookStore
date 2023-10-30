@@ -2,14 +2,18 @@ import Book from "../models/Book.js"
 
 /*Add One Book*/ 
 export const AddBook = async(req, res) => {
-    try {
+    try { 
+       // const newBookData = {
+      //   ...req.body,
+      //   author: , // Set the author's ID
+      // } 
         const newBook = await Book.create(req.body);
-        res.status(201).json({Book:newBook, message: "Product added with success" });
+        res.status(201).json({Book:newBook, message: "Book added with success" });
       }
  catch (e) {
     res.status(400).json({
         e:e.message,
-        message:"Product Not Added"
+        message:"Book Not Added"
     })
 }
 };
@@ -17,8 +21,8 @@ export const AddBook = async(req, res) => {
 /*Find All Books*/ 
 export const FindAllBooks = async (req, res) => {
     try {
-      const books = await Book.find();
-  
+      const books = await Book.find().populate('author').populate('category').exec();
+      
       if (!books || books.length === 0) {
         return res.status(404).json({ message: "Books Not Found" });
       }
