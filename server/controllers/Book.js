@@ -21,7 +21,7 @@ export const AddBook = async(req, res) => {
 /*Find All Books*/ 
 export const FindAllBooks = async (req, res) => {
     try {
-      const books = await Book.find().populate('author').populate('category').exec();
+      const books = await Book.find().populate({path: 'author',select: '-_id -__v',}).populate({path: 'category',select: 'title -_id',}).exec();
       
       if (!books || books.length === 0) {
         return res.status(404).json({ message: "Books Not Found" });

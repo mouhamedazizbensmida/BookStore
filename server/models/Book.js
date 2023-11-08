@@ -12,12 +12,11 @@ const bookSchema =new  mongoose.Schema(
               ref: "Author", // This references an "Author" model
               required: true,
             },
-            category: {
+            category: [{
               type: mongoose.Schema.Types.ObjectId,
               ref: "Category", // This references an "Author" model
               required: true,
-            },
-  
+            }],  
            }
 
 	
