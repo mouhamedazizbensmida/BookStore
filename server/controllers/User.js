@@ -8,25 +8,24 @@ export const Signup = async (req, res) => {
         .hash(req.body.password, 10)
         .then((hash) => {
             const user = new User({
-                ...req.body,
-                // lastName:req.body.lastName,
-                // firstName:req.body.firstName,
-                // email: req.body.email,
+                ...req.body, 
                 password: hash,
-                // role:req.body.role,
             })
             user
                 .save()
                 .then((response) => {
-                    const newUser = response.toObject()
-                    delete newUser.password
+                    const newUser = response.toPublic(); 
                     res.status(201).json({
                         user: newUser,
                         message: "utilisateur crée !"
                     })
                 })
-                .catch((error) => res.status(400).json({error:error.message}))
-        })
+                .catch((error) => {if (error.name === 'ValidationError' && error.errors.email.kind === 'unique') {
+                    res.status(400).json({ error: 'Email déjà utilisé', message: 'Données invalides' });
+                  } else {
+                    res.status(400).json({ error: error.message, message: 'Données invalides' });
+                  }
+                });})
         .catch((error) => res.status(500).json({error}))
 }
 

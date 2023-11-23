@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import uniqueValidator from 'mongoose-unique-validator';
 const userSchema =new  mongoose.Schema(
 	{
 		
@@ -12,8 +13,22 @@ const userSchema =new  mongoose.Schema(
                 default: 'user',
               },
 	},
-	
+		
+        { timestamps: true }
 );
-
+userSchema.virtual('fullname').get(function(){
+        return this.firstName +'' + this.lastName;
+     });
+    
+     userSchema.methods.toPublic = function() {
+        const user = this;
+        const userObject = user.toObject();
+       
+        delete userObject.password;
+        userObject.name = '${user.firstName} ${user.lastName}';
+        
+        return userObject;
+       }
+       userSchema.plugin(uniqueValidator);
 const User = mongoose.model("User", userSchema)
 export default User;

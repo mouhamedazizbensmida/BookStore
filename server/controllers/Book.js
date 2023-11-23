@@ -1,22 +1,35 @@
 import Book from "../models/Book.js"
 
-/*Add One Book*/ 
-export const AddBook = async(req, res) => {
-    try { 
-       // const newBookData = {
-      //   ...req.body,
-      //   author: , // Set the author's ID
-      // } 
-        const newBook = await Book.create(req.body);
-        res.status(201).json({Book:newBook, message: "Book added with success" });
+/* Add One Book */
+export const AddBook = async (req, res) => {
+  try {
+    const newBook = new Book(req.body);
+
+    newBook.validate((err) => {
+      if (err) {
+        res.status(401).json({ error: 'Invalid author ID!' });
+        return;
       }
- catch (e) {
-    res.status(400).json({
-        e:e.message,
-        message:"Book Not Added"
-    })
-}
+
+      newBook.save((err, savedBook) => {
+        if (err) {
+          res.status(400).json({
+            error: err.message,
+            message: "Book Not Added",
+          });
+        } else {
+          res.status(201).json({ Book: savedBook, message: "Book added with success" });
+        }
+      });
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+      message: "Internal Server Error",
+    });
+  }
 };
+
 
 /*Find All Books*/ 
 export const FindAllBooks = async (req, res) => {
@@ -102,7 +115,34 @@ export const DeleteBook = async (req, res) => {
           });
       }
 }
+export const findbookbyauthor= (req, res) => {
+  Book.findByAuthor(req.params.id)
+    .then(books => res.json(books)) 
+    .catch(err => res.status(500).json({error: err}));
+}
+export const AddbookVaAuthor = async (req, res) => {
+  try {
+    const { title, auteur } = req.body;
 
+    // Valider le livre avec Mongoose
+    const newBook = new Livre({ title, auteur });
+    await newBook.validate();
+
+    // Vérifier si l'auteur a des anciens livres
+    const anciensLivres = await Book.find({ auteur });
+
+    if (anciensLivres.length > 0) {
+      // L'auteur a des anciens livres, vous pouvez créer le nouveau livre
+      await newBook.save();
+      res.status(201).json({ message: 'Livre créé avec succès!' });
+    } else {
+      // L'auteur n'a pas d'anciens livres
+      res.status(401).json({ error: 'L\'auteur doit avoir écrit d\'autres livres avant de créer celui-ci.' });
+    }
+  } catch (error) {
+    res.status(400).json({ erreur: error.message });
+  }
+};
 
 
 

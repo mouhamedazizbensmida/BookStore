@@ -7,7 +7,8 @@ const CategorySchema =new  mongoose.Schema(
             enum: [ 'Romance','Action','Comedy'],
             required:true
           },
-	},
+	},	
+  { timestamps: true }
 	
 );
 

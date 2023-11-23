@@ -5,7 +5,8 @@ const taskSchema =new  mongoose.Schema(
         duration:{type:String,required:true},
         description:{type:String,required:false},
 	},
-	
+		
+	{ timestamps: true }
 );
 
 const Task = mongoose.model("Task", taskSchema)
